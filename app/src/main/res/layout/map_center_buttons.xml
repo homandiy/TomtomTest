@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/centerConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/dcFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="62dp"
+            android:layout_marginStart="24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/deleteFrame"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/dcFButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="true"
+                android:onClick="showDC"
+                android:padding="3dp"
+                android:src="@android:color/transparent"
+                app:backgroundTint="@android:color/holo_blue_dark" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="16dp"
+                android:text="DC"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/deleteFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="62dp"
+            android:layout_marginStart="24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/tagFrame"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/laFButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="true"
+                android:onClick="showLA"
+                android:padding="3dp"
+                android:src="@android:color/transparent"
+                app:backgroundTint="@android:color/holo_blue_dark" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="16dp"
+                android:text="LA"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:id="@+id/tagFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="62dp"
+            android:layout_marginStart="24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/markerFrame"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/nyFButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="true"
+                android:onClick="showNY"
+                android:padding="3dp"
+                android:src="@android:color/transparent"
+                app:backgroundTint="@android:color/holo_blue_dark" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="16dp"
+                android:text="NY"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/markerFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="24dp"
+            android:layout_marginStart="24dp"
+            android:onClick="showCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="true"
+                android:onClick="showCenter"
+                android:padding="3dp"
+                android:src="@android:color/transparent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="16dp"
+                android:text="center"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/myLocationButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="100dp"
+            android:background="@drawable/ic_current_position_color"
+            android:onClick="showMyLocation"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:text="My location"
+            android:textColor="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/compassButton"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/compassButton"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ic_current_position_color"
+            android:onClick="showCompass"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:text="Compass"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/myLocationButton" />
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

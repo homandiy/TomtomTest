@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/mapTitles"
+        android:title="Map Tiles" />
+    <item
+        android:id="@+id/mapTraffic"
+        android:title="Map Traffic" />
+    <item
+        android:id="@+id/mapCenter"
+        android:title="Map Center" />
+    <item
+        android:id="@+id/mapPersective"
+        android:title="Map 2D/3D" />
+    <item
+        android:id="@+id/aboutTest"
+        android:title="About" />
+</menu>

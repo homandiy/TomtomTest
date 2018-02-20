@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Tomtom Test</string>
+
+    <string name="tomtom_api">bexHT9aGYcdjadKRTIZAoBRJlC9a2l7E</string>
+    <string name="title">Tomtom Test</string>
+    <string name="vector">vector</string>
+    <string name="raster">raster</string>
+
+</resources>

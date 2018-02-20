@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/markerConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/deleteFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="62dp"
+            android:layout_marginStart="24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/tagFrame"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/deleteFButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="removeMarker"
+                android:padding="3dp"
+                android:src="@android:color/transparent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="16dp"
+                android:text="X"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/balloonFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="86dp"
+            android:layout_marginStart="8dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tagFrame">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/balloonFButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/balloon"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="modifyTag"
+                android:padding="3dp"
+                android:visibility="visible"
+                app:backgroundTint="@color/colorPrimary"
+                app:backgroundTintMode="src_over"
+                app:fabSize="mini" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="16dp"
+                android:gravity="center"
+                android:text="Add\nImage"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/background_light"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/tagFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="62dp"
+            android:layout_marginStart="24dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/markerFrame"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/tagFButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/balloon"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="modifyTag"
+                android:padding="3dp"
+                android:visibility="visible"
+                app:backgroundTint="@color/cardview_shadow_end_color"
+                app:backgroundTintMode="src_over"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/balloon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:elevation="16dp"
+                android:text="TAG"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/holo_red_light"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/markerFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginStart="24dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/markerFButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="showOptions"
+                android:padding="3dp"
+                android:src="@android:color/transparent"
+                app:backgroundTint="@android:color/background_dark" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="16dp"
+                android:text="M"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/tagLinearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/common_google_signin_btn_icon_dark_normal_background"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:layout_weight="1"
+                    android:text="Marker TAG/Balloon:"
+                    android:textColor="@android:color/background_dark"
+                    android:textStyle="bold|italic"
+                    app:layout_constraintBottom_toTopOf="@+id/tagEditText"
+                    tools:layout_editor_absoluteX="221dp" />
+
+                <ImageButton
+                    android:layout_width="220dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:onClick="updateTag"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/modify_button" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/tagEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:ems="10"
+                android:hint="Tag/Balloon Name"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.449"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="449dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="24dp"
+            android:onClick="clearAllMarkers"
+            android:text="Clear\nAll Markers"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>
