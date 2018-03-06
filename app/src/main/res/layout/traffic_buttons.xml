@@ -12,7 +12,6 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/incidentButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
@@ -23,7 +22,6 @@
             android:textColor="@android:color/white" />
 
         <Button
-            android:id="@+id/flowButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
@@ -34,7 +32,6 @@
             android:textColor="@android:color/white" />
 
         <Button
-            android:id="@+id/noTrafficButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"

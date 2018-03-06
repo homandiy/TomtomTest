@@ -1,16 +1,24 @@
 package com.homanhuang.tomtomtest;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,21 +30,29 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.tomtom.online.sdk.common.location.LatLng;
+import com.tomtom.online.sdk.map.Icon;
 import com.tomtom.online.sdk.map.MapConstants;
 import com.tomtom.online.sdk.map.MapFragment;
 import com.tomtom.online.sdk.map.Marker;
+import com.tomtom.online.sdk.map.MarkerAnchor;
 import com.tomtom.online.sdk.map.MarkerBuilder;
-import com.tomtom.online.sdk.map.SimpleMarkerBalloon;
+import com.tomtom.online.sdk.map.OnMapReadyCallback;
 import com.tomtom.online.sdk.map.TomtomMap;
 import com.tomtom.online.sdk.map.TomtomMapCallback;
 import com.tomtom.online.sdk.map.TomtomMapCallback.OnMarkerClickListener;
 import com.tomtom.online.sdk.map.model.MapTilesType;
 import com.tomtom.online.sdk.map.model.MapTrafficType;
+
+import java.io.File;
+import java.util.List;
 
 import static com.tomtom.online.sdk.map.MapConstants.DEFAULT_ZOOM_LEVEL;
 
@@ -47,97 +63,124 @@ public class MainActivity extends AppCompatActivity {
     public static void ltag(String message) {
         Log.i(TAG, message);
     }
+
     /* Toast shortcut */
     public static void msg(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
-    public void hideKeyboard(Context context, EditText mEditText) {
-    	InputMethodManager keyboard = (InputMethodManager)getSystemService(context.INPUT_METHOD_SERVICE);
-    	// hide keyboard after input
-    	keyboard.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
-    }
+        public void hideKeyboard(Context context, EditText mEditText) {
+            InputMethodManager keyboard = (InputMethodManager)getSystemService(context.INPUT_METHOD_SERVICE);
+            // hide keyboard after input
+            keyboard.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+        }
 
-    private MapFragment mapFragment;
-    private TomtomMap tomtomMap;
-    Thread markerThread;
+        private OnMapReadyCallback onMapReadyCallback =
+            new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(TomtomMap map) {
+                    //Map is ready here
+                    tomtomMap = map;
+                    tomtomMap.setMyLocationEnabled(true);
+                    tomtomMap.getUiSettings().getCurrentLocationView().show();
 
-    //Map balloon
-    SimpleMarkerBalloon balloon;
+                    ltag("Map is ready");
 
-    private OnMapReadyCallback onMapReadyCallback =
-        new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(TomtomMap map) {
-            //Map is ready here
-            tomtomMap = map;
-            tomtomMap.setMyLocationEnabled(true);
-            tomtomMap.getUiSettings().getCurrentLocationView().show();
+                    //Map events
+                    tomtomMap.addOnMapClickListener(onMapClickListener);
+                    tomtomMap.addOnMapLongClickListener(onMapLongClickListener);
+                    tomtomMap.addOnMapViewPortChangedListener(onMapViewPortChangedListener);
 
-            ltag("Map is ready");
-
-            //Map events
-            tomtomMap.addOnMapClickListener(onMapClickListener);
-            tomtomMap.addOnMapLongClickListener(onMapLongClickListener);
-            tomtomMap.addOnMapViewPortChangedListener(onMapViewPortChangedListener);
-
-            //marker
-            OnMarkerClickListener onMarkerClickListener =
-                new OnMarkerClickListener() {
-                    @Override
-                    public void onMarkerClick(Marker marker) {
-                        ltag("Marker Clicked at ID: "+marker.getId()+", tag: "+marker.getTag().toString());
-
-                        mMarker = marker;
-                        openMarkerOption = false;
-                        showMarkerOptionButton();
-                        markerThread = new Thread() {
+                    //marker
+                    OnMarkerClickListener onMarkerClickListener =
+                        new OnMarkerClickListener() {
                             @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(2*60*1000);
-                                } catch (InterruptedException e) {
-                                    ltag(e.toString());
-                                }
+                            public void onMarkerClick(Marker marker) {
+                                ltag("Marker Clicked at ID: "+marker.getId()+", tag: "+marker.getTag().toString());
 
-                                runOnUiThread(new Runnable() {
+                                mMarker = marker;
+                                openMarkerOption = false;
+                                showMarkerOptionButton();
+                                markerThread = new Thread() {
                                     @Override
                                     public void run() {
-                                        hideMarkerButtons(Choice.ALL);
+                                        try {
+                                            Thread.sleep(20*1000);
+                                        } catch (InterruptedException e) {
+                                            ltag("Stop timer.");
+                                        }
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                hideMarkerButtons(Choice.ALL);
+                                            }
+                                        });
                                     }
-                                });
+                                };
+                                markerThread.start(); //start the thread
                             }
                         };
-                        markerThread.start(); //start the thread
-                    }
-                };
-            tomtomMap.addOnMarkerClickListener(onMarkerClickListener);
-            }
-        };
+                    tomtomMap.addOnMarkerClickListener(onMarkerClickListener);
+
+                    //load my location
+                    Location mlocation = tomtomMap.getUserLocation();
+                    tomtomMap.centerOn(mlocation.getLatitude(),
+                            mlocation.getLongitude(),
+                            DEFAULT_ZOOM_LEVEL,
+                            MapConstants.ORIENTATION_NORTH);
+
+                   //atest();
+                }
+            };
 
     static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 201; // any code you want.
     public void requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED &&
-                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                    checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 ltag("Permission is granted");
             } else {
                 ltag("Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{
                                 Manifest.permission.INTERNET,
-                                Manifest.permission.ACCESS_FINE_LOCATION
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE
                         },
                         REQUEST_ID_MULTIPLE_PERMISSIONS);
             }
         }
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        tomtomMap.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        ltag("Permission:" + permissions.toString());
+
+        switch (requestCode) {
+            case REQUEST_ID_MULTIPLE_PERMISSIONS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // All good!
+                    tomtomMap.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                } else {
+                    msg(this, "Need your location!");
+                }
+
+                break;
+        }
     }
 
+    /*
+        Variagbles
+     */
+    private MapFragment mapFragment;
+    private TomtomMap tomtomMap;
+    Thread markerThread;
     TextView titleTextView;
 
     //Map Tiles Buttons & layout
@@ -170,13 +213,16 @@ public class MainActivity extends AppCompatActivity {
     //Map marker
     Marker mMarker;
     View markerInclude;
-    ConstraintLayout markerConstraintLayout;
-    LinearLayout tagLinearLayout;
     FrameLayout markerFrame;
-    FrameLayout tagFrame;
-    FrameLayout deleteFrame;
-    Button clearButton;
+    ConstraintLayout optionConstraintLayout;
+    ConstraintLayout tagConstraintLayout;
     EditText tagEditText;
+    ImageView balloonImageView;
+    Bitmap balloonImage;
+
+    /*
+        End of Variables
+     */
 
     public void vectorView(View v) {
         //setTiles
@@ -319,18 +365,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void addMarker(LatLng position, String tag) {
         MarkerBuilder markerBuilder;
+
+        HomanMarkerLayoutBalloon mBalloon = new HomanMarkerLayoutBalloon(
+                R.layout.balloon_layout,
+                balloonImage);
+
         if (tag == "") {
-            markerBuilder = new MarkerBuilder(position)
-                    .tag(tag)
-                    .markerBalloon(new SimpleMarkerBalloon(position.toSimplerString()));
-        } else {
-            balloon = new SimpleMarkerBalloon(tag);
-            markerBuilder = new MarkerBuilder(position)
-                    .tag(tag)
-                    .markerBalloon(balloon);
-            balloon.setText(tag);
+            tag = "unknown";
         }
+        markerBuilder = new MarkerBuilder(position)
+                .icon(Icon.Factory.fromResources(getApplicationContext(), R.drawable.ic_favourites))
+                .tag(tag)
+                .markerBalloon(mBalloon)
+                .iconAnchor(MarkerAnchor.Bottom)
+                .decal(true);
+
         mMarker = tomtomMap.addMarker(markerBuilder);
+        mBalloon.setText(tag);
+        mBalloon.getBalloonOffset(mMarker);
     }
 
     //map event: panning
@@ -362,15 +414,11 @@ public class MainActivity extends AppCompatActivity {
         markerFrame.setVisibility(View.VISIBLE);
         if (openMarkerOption) {
             ltag("Show Marker Option.");
-            tagFrame.setVisibility(View.VISIBLE);
-            deleteFrame.setVisibility(View.VISIBLE);
-            clearButton.setVisibility(View.VISIBLE);
+            optionConstraintLayout.setVisibility(View.VISIBLE);
             openMarkerOption = false;
         } else {
             ltag("Show Marker Option.");
-            tagFrame.setVisibility(View.INVISIBLE);
-            deleteFrame.setVisibility(View.INVISIBLE);
-            clearButton.setVisibility(View.INVISIBLE);
+            optionConstraintLayout.setVisibility(View.INVISIBLE);
             openMarkerOption = true;
         }
     }
@@ -381,10 +429,122 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void modifyTag(View v) {
+        //hide and stop timer
         hideMarkerButtons(Choice.ALL);
         //show Eidttext box
-        tagLinearLayout.setVisibility(View.VISIBLE);
+        tagConstraintLayout.setVisibility(View.VISIBLE);
         tagEditText.setText(mMarker.getTag().toString());
+    }
+
+
+    //get Image from AddImageBalloonActivity
+    static final int REQUEST_IMAGE_BALLOON = 33; // any code you want.
+    public void changeImageBalloon(View v) {
+        Intent pickImageIntent = new Intent(this, ChangeBalloonImageActivity.class);
+        startActivityForResult(pickImageIntent, REQUEST_IMAGE_BALLOON);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        ltag("Request Code: "+requestCode+".    Result Code: "+resultCode);
+
+        switch (requestCode) {
+            case REQUEST_IMAGE_BALLOON:
+
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    String receiveUrl = bundle.getString("fileurl");
+
+                    ltag("receive msg: "+receiveUrl);
+
+                    //update balloon image
+                    File f = new File(receiveUrl);
+                    Target mTarget = new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            // do something with the Bitmap
+                            ltag("bitmap size: "+bitmap.getByteCount());
+
+                            balloonImage = bitmap;
+                            balloonImageView.setImageBitmap(balloonImage);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            ltag("Read File Error!");
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    };
+                    Picasso.with(getApplicationContext())
+                            .load(f)
+                            .resize(balloonImageView.getWidth(), balloonImageView.getHeight())
+                            .centerInside()
+                            .into(mTarget);
+                    balloonImageView.setTag(mTarget);
+                }
+                break;
+        }
+    }
+
+    public void atest()  {
+
+        ltag("Test Statge.");
+        ltag("Test Statge.");
+        ltag("Test Statge.");
+
+        tomtomMap.centerOn(
+                LA.getLatitude(),
+                LA.getLongitude(),
+                DEFAULT_ZOOM_LEVEL,
+                MapConstants.ORIENTATION_NORTH);
+
+        addMarker(LA, "");
+
+        //hide and stop timer
+        hideMarkerButtons(Choice.ALL);
+        //show Eidttext box
+        tagConstraintLayout.setVisibility(View.VISIBLE);
+        tagEditText.setText(mMarker.getTag().toString());
+
+
+
+        markerThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5*1000);
+                } catch (InterruptedException e) {
+                    ltag("Stop timer.");
+                }
+
+                runOnUiThread(new Runnable() {
+                    @SuppressLint("RestrictedApi")
+                    @Override
+                    public void run() {
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("p1", "test");
+
+                        Intent secIntent = new Intent(MainActivity.this, SecondActivity.class);
+                        secIntent.putExtras(bundle);
+                        startActivityForResult(secIntent, REQUEST_IMAGE_BALLOON);
+                    }
+                });
+            }
+        };
+        markerThread.start(); //start the thread
+    }
+
+    public void cancelTagEdit(View v) {
+        tagEditText.setText("");
+        hideKeyboard(this, tagEditText);
+        tagConstraintLayout.setVisibility(View.INVISIBLE);
     }
 
     public void removeMarker(View v) {
@@ -408,9 +568,7 @@ public class MainActivity extends AppCompatActivity {
             //remove timer
             if (markerThread != null) markerThread.interrupt();
         }
-        tagFrame.setVisibility(View.INVISIBLE);
-        deleteFrame.setVisibility(View.INVISIBLE);
-        clearButton.setVisibility(View.INVISIBLE);
+        optionConstraintLayout.setVisibility(View.INVISIBLE);
     }
 
     public void updateTag(View v) {
@@ -430,11 +588,10 @@ public class MainActivity extends AppCompatActivity {
         //Clear Text box
         tagEditText.setText("");
         //hide Text box
-        tagLinearLayout.setVisibility(View.INVISIBLE);
+        tagConstraintLayout.setVisibility(View.INVISIBLE);
         //hide keyboard
         hideKeyboard(getApplicationContext(), tagEditText);
     }
-//
 
     /*
         OnCreate
@@ -484,13 +641,15 @@ public class MainActivity extends AppCompatActivity {
 
         //Map marker
         markerInclude = findViewById(R.id.markerInclude);
-        markerConstraintLayout = (ConstraintLayout) markerInclude.findViewById(R.id.markerConstraintLayout);
-        tagLinearLayout = (LinearLayout) markerInclude.findViewById(R.id.tagLinearLayout);
+        optionConstraintLayout = (ConstraintLayout) markerInclude.findViewById(R.id.optionConstraintLayout);
+        tagConstraintLayout = (ConstraintLayout) markerInclude.findViewById(R.id.tagConstraintLayout);
         markerFrame = (FrameLayout) markerInclude.findViewById(R.id.markerFrame);
-        tagFrame = (FrameLayout) markerInclude.findViewById(R.id.tagFrame);
-        deleteFrame = (FrameLayout) markerInclude.findViewById(R.id.deleteFrame);
-        clearButton = (Button) markerInclude.findViewById(R.id.clearButton);
         tagEditText = (EditText) markerInclude.findViewById(R.id.tagEditText);
+        balloonImageView  = (ImageView) markerInclude.findViewById(R.id.balloonImageView);
+        balloonImage = BitmapFactory.decodeResource(this.getResources(), R.drawable.balloon);
+
+
+
     }
 
     @Override
@@ -538,5 +697,12 @@ public class MainActivity extends AppCompatActivity {
                 return false;
 
         }
+    }
+
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //Do not call super class method here.
+        //super.onSaveInstanceState(outState);
     }
 }

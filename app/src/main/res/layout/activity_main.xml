@@ -7,7 +7,6 @@
     tools:context="com.homanhuang.tomtomtest.MainActivity">
 
     <FrameLayout
-        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

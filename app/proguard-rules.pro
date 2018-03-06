@@ -21,3 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 -dontwarn com.squareup.okhttp.**
+
+-keep public class com.tomtom.online.sdk.common.** {
+    public <methods>;
+}
